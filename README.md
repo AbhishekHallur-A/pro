@@ -22,5 +22,5 @@ uvicorn src.app.main:app --reload
 - `POST /users/{user_id}/follow/{target_id}` follow a user
 
 ## Notes
-- Uses SQLite for development. Swap the `DATABASE_URL` in `src/app/database.py` for Postgres in production.
+- Uses SQLite for development. Set `APP_DATABASE_URL` for Postgres in production.
 - This starter focuses on the core domain model to keep the initial scaffold clean and extensible.

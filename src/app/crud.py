@@ -11,8 +11,14 @@ def create_user(db: Session, payload: schemas.UserCreate) -> models.User:
     return user
 
 
-def list_users(db: Session) -> list[models.User]:
-    return db.query(models.User).order_by(models.User.created_at.desc()).all()
+def list_users(db: Session, limit: int, offset: int) -> list[models.User]:
+    return (
+        db.query(models.User)
+        .order_by(models.User.created_at.desc())
+        .limit(limit)
+        .offset(offset)
+        .all()
+    )
 
 
 def get_user(db: Session, user_id: int) -> models.User | None:
@@ -31,8 +37,14 @@ def get_post(db: Session, post_id: int) -> models.Post | None:
     return db.get(models.Post, post_id)
 
 
-def list_posts(db: Session) -> list[models.Post]:
-    return db.query(models.Post).order_by(models.Post.created_at.desc()).all()
+def list_posts(db: Session, limit: int, offset: int) -> list[models.Post]:
+    return (
+        db.query(models.Post)
+        .order_by(models.Post.created_at.desc())
+        .limit(limit)
+        .offset(offset)
+        .all()
+    )
 
 
 def add_comment(db: Session, post_id: int, payload: schemas.CommentCreate) -> models.Comment:

@@ -1,4 +1,5 @@
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, Query, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
@@ -19,12 +20,20 @@ def get_db() -> Session:
 
 @app.post("/users", response_model=schemas.UserRead, status_code=status.HTTP_201_CREATED)
 def create_user(payload: schemas.UserCreate, db: Session = Depends(get_db)) -> schemas.UserRead:
-    return crud.create_user(db, payload)
+    try:
+        return crud.create_user(db, payload)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="User already exists") from None
 
 
 @app.get("/users", response_model=list[schemas.UserRead])
-def list_users(db: Session = Depends(get_db)) -> list[schemas.UserRead]:
-    return crud.list_users(db)
+def list_users(
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+) -> list[schemas.UserRead]:
+    return crud.list_users(db, limit=limit, offset=offset)
 
 
 @app.post("/posts", response_model=schemas.PostRead, status_code=status.HTTP_201_CREATED)
@@ -35,8 +44,12 @@ def create_post(payload: schemas.PostCreate, db: Session = Depends(get_db)) -> s
 
 
 @app.get("/posts", response_model=list[schemas.PostRead])
-def list_posts(db: Session = Depends(get_db)) -> list[schemas.PostRead]:
-    return crud.list_posts(db)
+def list_posts(
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    db: Session = Depends(get_db),
+) -> list[schemas.PostRead]:
+    return crud.list_posts(db, limit=limit, offset=offset)
 
 
 @app.post(
@@ -72,7 +85,11 @@ def add_like(
         raise HTTPException(status_code=404, detail="User not found")
     if crud.get_like(db, post_id, payload.user_id):
         raise HTTPException(status_code=400, detail="Post already liked")
-    return crud.add_like(db, post_id, payload)
+    try:
+        return crud.add_like(db, post_id, payload)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Post already liked") from None
 
 
 @app.post(
@@ -91,4 +108,13 @@ def follow_user(
         raise HTTPException(status_code=404, detail="User not found")
     if crud.get_follow(db, user_id, target_id):
         raise HTTPException(status_code=400, detail="Already following")
-    return crud.follow_user(db, user_id, target_id)
+    try:
+        return crud.follow_user(db, user_id, target_id)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Already following") from None
+
+
+@app.get("/health")
+def health_check() -> dict[str, str]:
+    return {"status": "ok"}

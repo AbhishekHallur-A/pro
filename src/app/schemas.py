@@ -19,6 +19,11 @@ class UserRead(BaseModel):
         from_attributes = True
 
 
+class Pagination(BaseModel):
+    limit: int = Field(default=20, ge=1, le=100)
+    offset: int = Field(default=0, ge=0)
+
+
 class PostCreate(BaseModel):
     author_id: int
     content: str = Field(min_length=1, max_length=1000)
