@@ -11,6 +11,12 @@ pip install -r requirements.txt
 uvicorn src.app.main:app --reload
 ```
 
+## Frontend preview
+
+```bash
+./scripts/preview_frontend.sh
+```
+
 ## API
 
 - `POST /users` create a user
