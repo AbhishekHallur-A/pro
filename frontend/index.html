@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pulse — Social App</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="logo">Pulse</div>
+      <nav class="nav">
+        <a href="#">Home</a>
+        <a href="#">Explore</a>
+        <a href="#">Messages</a>
+        <button class="primary">Post</button>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar">
+        <div class="profile-card">
+          <img src="https://placehold.co/96x96" alt="Profile" />
+          <div>
+            <h3>@luna.dev</h3>
+            <p>Building the next social hub.</p>
+          </div>
+          <button class="secondary">Edit profile</button>
+        </div>
+
+        <div class="card">
+          <h4>Trends</h4>
+          <ul>
+            <li>#AI</li>
+            <li>#Design</li>
+            <li>#Startups</li>
+            <li>#Travel</li>
+          </ul>
+        </div>
+      </aside>
+
+      <section class="feed">
+        <div class="composer card">
+          <textarea placeholder="Share what's happening..."></textarea>
+          <div class="actions">
+            <button class="ghost">Photo</button>
+            <button class="ghost">Video</button>
+            <button class="primary">Publish</button>
+          </div>
+        </div>
+
+        <article class="post card">
+          <div class="post-header">
+            <img src="https://placehold.co/48x48" alt="Avatar" />
+            <div>
+              <strong>Aria Miles</strong>
+              <span>@aria · 2h</span>
+            </div>
+          </div>
+          <p>Launching our creator studio beta this week 🚀. Early testers wanted analytics, drafts, and auto-captions.</p>
+          <div class="post-media"></div>
+          <div class="post-actions">
+            <button>💬 24</button>
+            <button>❤️ 128</button>
+            <button>🔁 42</button>
+            <button>🔖</button>
+          </div>
+        </article>
+
+        <article class="post card">
+          <div class="post-header">
+            <img src="https://placehold.co/48x48" alt="Avatar" />
+            <div>
+              <strong>Nova</strong>
+              <span>@nova · 5h</span>
+            </div>
+          </div>
+          <p>Golden hour over the bay. Shot on mobile, edited in 5 minutes.</p>
+          <div class="post-media photo"></div>
+          <div class="post-actions">
+            <button>💬 9</button>
+            <button>❤️ 301</button>
+            <button>🔁 18</button>
+            <button>🔖</button>
+          </div>
+        </article>
+      </section>
+
+      <aside class="rightbar">
+        <div class="card">
+          <h4>Suggested creators</h4>
+          <ul class="suggestions">
+            <li><span>@pulse.ai</span><button class="secondary">Follow</button></li>
+            <li><span>@citylight</span><button class="secondary">Follow</button></li>
+            <li><span>@pixelcraft</span><button class="secondary">Follow</button></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h4>Upcoming live rooms</h4>
+          <p>Designing for attention — 4:30 PM</p>
+          <button class="primary full">Set reminder</button>
+        </div>
+      </aside>
+    </main>
+  </body>
+</html>
