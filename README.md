@@ -23,6 +23,9 @@ Then open `http://localhost:8080` and use the API box (top-right) to point to yo
 
 ## API
 
+- `POST /auth/register` register with email, username, password
+- `POST /auth/login` login and receive JWT access token + session token
+- `GET /auth/me` read current user from Bearer token
 - `POST /users` create a user
 - `GET /users` list users
 - `POST /posts` create a post

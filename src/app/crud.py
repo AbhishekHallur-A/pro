@@ -1,14 +1,37 @@
+from datetime import datetime, timedelta, timezone
+
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+from .security import generate_session_token, hash_password
 
 
 def create_user(db: Session, payload: schemas.UserCreate) -> models.User:
-    user = models.User(email=payload.email, username=payload.username)
+    user = models.User(
+        email=payload.email,
+        username=payload.username,
+        password_hash=hash_password(payload.password),
+    )
     db.add(user)
     db.commit()
     db.refresh(user)
     return user
+
+
+def get_user_by_email(db: Session, email: str) -> models.User | None:
+    return db.query(models.User).filter(models.User.email == email).first()
+
+
+def create_session(db: Session, user_id: int) -> models.Session:
+    session = models.Session(
+        user_id=user_id,
+        token=generate_session_token(),
+        expires_at=datetime.now(timezone.utc) + timedelta(days=7),
+    )
+    db.add(session)
+    db.commit()
+    db.refresh(session)
+    return session
 
 
 def list_users(db: Session, limit: int, offset: int) -> list[models.User]:

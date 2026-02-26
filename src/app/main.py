@@ -1,14 +1,17 @@
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
+from .security import create_access_token, decode_access_token, verify_password
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Social Media App Starter", version="0.1.0")
+security = HTTPBearer(auto_error=False)
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,12 +21,58 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 def get_db() -> Session:
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
+) -> models.User:
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Missing authorization token")
+    try:
+        payload = decode_access_token(credentials.credentials)
+        user_id = int(payload["sub"])
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token") from None
+
+    user = crud.get_user(db, user_id)
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+    return user
+
+
+@app.post("/auth/register", response_model=schemas.UserRead, status_code=status.HTTP_201_CREATED)
+def register(payload: schemas.UserCreate, db: Session = Depends(get_db)) -> schemas.UserRead:
+    try:
+        return crud.create_user(db, payload)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="User already exists") from None
+
+
+@app.post("/auth/login", response_model=schemas.TokenResponse)
+def login(payload: schemas.LoginRequest, db: Session = Depends(get_db)) -> schemas.TokenResponse:
+    user = crud.get_user_by_email(db, payload.email)
+    if not user or not verify_password(payload.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    session = crud.create_session(db, user.id)
+    return schemas.TokenResponse(
+        access_token=create_access_token(user.id),
+        session_token=session.token,
+    )
+
+
+@app.get("/auth/me", response_model=schemas.UserRead)
+def me(current_user: models.User = Depends(get_current_user)) -> schemas.UserRead:
+    return current_user
 
 
 @app.post("/users", response_model=schemas.UserRead, status_code=status.HTTP_201_CREATED)

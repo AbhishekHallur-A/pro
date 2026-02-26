@@ -6,6 +6,9 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite:///./app.db"
     enable_sql_echo: bool = False
+    jwt_secret: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_exp_minutes: int = 30
 
 
 settings = Settings()

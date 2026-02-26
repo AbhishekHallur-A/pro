@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 class UserCreate(BaseModel):
     email: EmailStr
     username: str = Field(min_length=3, max_length=50)
+    password: str = Field(min_length=8, max_length=128)
 
 
 class UserRead(BaseModel):
@@ -16,6 +17,17 @@ class UserRead(BaseModel):
     username: str
     is_active: bool
     created_at: datetime
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    session_token: str
+    token_type: str = "bearer"
 
 
 class Pagination(BaseModel):
