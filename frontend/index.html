@@ -9,99 +9,45 @@
   <body>
     <header class="top-bar">
       <div class="logo">Pulse</div>
-      <nav class="nav">
-        <a href="#">Home</a>
-        <a href="#">Explore</a>
-        <a href="#">Messages</a>
-        <button class="primary">Post</button>
-      </nav>
+      <div class="api-config">
+        <label for="apiBase">API</label>
+        <input id="apiBase" value="http://127.0.0.1:8000" />
+        <button id="connectApi" class="secondary">Connect</button>
+      </div>
     </header>
 
     <main class="layout">
-      <aside class="sidebar">
-        <div class="profile-card">
-          <img src="https://placehold.co/96x96" alt="Profile" />
-          <div>
-            <h3>@luna.dev</h3>
-            <p>Building the next social hub.</p>
-          </div>
-          <button class="secondary">Edit profile</button>
+      <aside class="card">
+        <h3>Create User</h3>
+        <form id="userForm" class="stack">
+          <input id="email" type="email" placeholder="email" required />
+          <input id="username" type="text" placeholder="username" required />
+          <button class="primary" type="submit">Create user</button>
+        </form>
+        <small id="userResult"></small>
+      </aside>
+
+      <section>
+        <div class="card">
+          <h3>Create Post</h3>
+          <form id="postForm" class="stack">
+            <input id="authorId" type="number" placeholder="author id" required />
+            <textarea id="postContent" placeholder="Share what's happening..." required></textarea>
+            <button class="primary" type="submit">Publish</button>
+          </form>
+          <small id="postResult"></small>
         </div>
 
         <div class="card">
-          <h4>Trends</h4>
-          <ul>
-            <li>#AI</li>
-            <li>#Design</li>
-            <li>#Startups</li>
-            <li>#Travel</li>
-          </ul>
+          <div class="row-between">
+            <h3>Live Feed</h3>
+            <button id="refreshPosts" class="secondary">Refresh</button>
+          </div>
+          <div id="feed" class="feed-list"></div>
         </div>
-      </aside>
-
-      <section class="feed">
-        <div class="composer card">
-          <textarea placeholder="Share what's happening..."></textarea>
-          <div class="actions">
-            <button class="ghost">Photo</button>
-            <button class="ghost">Video</button>
-            <button class="primary">Publish</button>
-          </div>
-        </div>
-
-        <article class="post card">
-          <div class="post-header">
-            <img src="https://placehold.co/48x48" alt="Avatar" />
-            <div>
-              <strong>Aria Miles</strong>
-              <span>@aria · 2h</span>
-            </div>
-          </div>
-          <p>Launching our creator studio beta this week 🚀. Early testers wanted analytics, drafts, and auto-captions.</p>
-          <div class="post-media"></div>
-          <div class="post-actions">
-            <button>💬 24</button>
-            <button>❤️ 128</button>
-            <button>🔁 42</button>
-            <button>🔖</button>
-          </div>
-        </article>
-
-        <article class="post card">
-          <div class="post-header">
-            <img src="https://placehold.co/48x48" alt="Avatar" />
-            <div>
-              <strong>Nova</strong>
-              <span>@nova · 5h</span>
-            </div>
-          </div>
-          <p>Golden hour over the bay. Shot on mobile, edited in 5 minutes.</p>
-          <div class="post-media photo"></div>
-          <div class="post-actions">
-            <button>💬 9</button>
-            <button>❤️ 301</button>
-            <button>🔁 18</button>
-            <button>🔖</button>
-          </div>
-        </article>
       </section>
-
-      <aside class="rightbar">
-        <div class="card">
-          <h4>Suggested creators</h4>
-          <ul class="suggestions">
-            <li><span>@pulse.ai</span><button class="secondary">Follow</button></li>
-            <li><span>@citylight</span><button class="secondary">Follow</button></li>
-            <li><span>@pixelcraft</span><button class="secondary">Follow</button></li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <h4>Upcoming live rooms</h4>
-          <p>Designing for attention — 4:30 PM</p>
-          <button class="primary full">Set reminder</button>
-        </div>
-      </aside>
     </main>
+
+    <script src="app.js"></script>
   </body>
 </html>
