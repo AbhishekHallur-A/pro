@@ -65,7 +65,7 @@ Then open `http://localhost:8080` and point API base URL to `http://127.0.0.1:80
 
 ## Phase 2 — React frontend (best for learning)
 
-A React-based UI is available in `frontend-react/` (CDN + Babel for zero-build learning setup).
+A React-based UI is available in `frontend-react/` (CDN + Babel for zero-build learning setup). It is designed with a cleaner, intuitive layout, consistent styling, responsive behavior, and immediate feedback states for loading/success/errors.
 
 Run it locally:
 

@@ -10,6 +10,7 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const callApi = async (path, options = {}) => {
     const res = await fetch(`${apiBase}${path}`, {
@@ -22,12 +23,15 @@ function App() {
   };
 
   const loadPosts = async () => {
+    setLoading(true);
     try {
       const data = await callApi("/posts?limit=20&offset=0");
       setPosts(data);
       setError("");
     } catch (e) {
       setError(`Load posts failed: ${e.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -82,28 +86,31 @@ function App() {
 
   return (
     <main className="app">
-      <header className="header">
-        <h1>Pulse React UI</h1>
+      <header className="top-nav card">
+        <div className="brand">
+          <h1>Pulse</h1>
+          <p>React Learning UI</p>
+        </div>
         <div className="api-box">
-          <input value={apiBase} onChange={(e) => setApiBase(e.target.value)} />
+          <input value={apiBase} onChange={(e) => setApiBase(e.target.value)} aria-label="API base URL" />
           <button onClick={connect}>Connect</button>
         </div>
       </header>
 
       <section className="grid">
         <article className="card">
-          <h2>Register</h2>
+          <h2>Create Account</h2>
           <form onSubmit={register} className="stack">
-            <input placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <input placeholder="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+            <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
             <input
               type="password"
-              placeholder="password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <button type="submit">Create account</button>
+            <button type="submit">Register</button>
           </form>
         </article>
 
@@ -112,7 +119,7 @@ function App() {
           <form onSubmit={createPost} className="stack">
             <input
               type="number"
-              placeholder="author id"
+              placeholder="Author ID"
               value={authorId}
               onChange={(e) => setAuthorId(e.target.value)}
               required
@@ -128,9 +135,22 @@ function App() {
         </article>
       </section>
 
-      <section className="card">
-        <h2>Feed</h2>
-        {posts.length === 0 ? <p>No posts yet.</p> : posts.map((p) => <p key={p.id}>#{p.id} by {p.author_id}: {p.content}</p>)}
+      <section className="card feed-card">
+        <div className="feed-header">
+          <h2>Feed</h2>
+          <button className="ghost" onClick={loadPosts}>Refresh</button>
+        </div>
+
+        {loading && <div className="loader">Loading posts…</div>}
+
+        {!loading && posts.length === 0 && <p className="muted">No posts yet. Publish your first update.</p>}
+
+        {!loading && posts.map((p) => (
+          <article key={p.id} className="post-item">
+            <p className="post-meta">Post #{p.id} · Author #{p.author_id}</p>
+            <p>{p.content}</p>
+          </article>
+        ))}
       </section>
 
       {message && <p className="ok">{message}</p>}
