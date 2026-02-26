@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - work
+  pull_request:
+
+jobs:
+  backend-checks:
+    name: Backend checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compile backend sources
+        run: python -m compileall src/app
+
+      - name: Smoke import app
+        run: python -c "from src.app.main import app; print(app.title)"
+
+  frontend-checks:
+    name: Frontend checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate frontend files exist
+        run: |
+          test -f frontend/index.html
+          test -f frontend/styles.css
+
+      - name: Validate preview script is executable
+        run: test -x scripts/preview_frontend.sh
