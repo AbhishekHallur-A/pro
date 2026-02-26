@@ -1,81 +1,89 @@
 # Social Media App (Instagram + Twitter Hybrid) – Starter
 
-This starter includes:
-- FastAPI backend API (`src/app`)
-- Browser-based Web UI (`frontend/`)
-- Local containerized deployment with Postgres (`Dockerfile`, `docker-compose.yml`)
+Production-oriented FastAPI starter with clean layering, JWT auth, Dockerized Postgres, and React learning UI.
 
-## Quick start (local Python)
+## Project structure (clean architecture)
+
+```text
+src/app/
+  api/        # dependencies (auth/db wiring)
+  routers/    # HTTP route definitions
+  services/   # business logic / use-cases
+  models.py   # SQLAlchemy ORM models
+  schemas.py  # Pydantic request/response schemas
+  database.py # engine/session setup
+  settings.py # environment config
+  security.py # bcrypt + JWT helpers
+```
+
+## Setup
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn src.app.main:app --reload
-```
-
-## Environment variable management
-
-1. Copy the example file:
-
-```bash
 cp .env.example .env
 ```
 
-2. Update values for your environment (`APP_JWT_SECRET` is required for production).
+Run API:
 
-Current app settings are read from `.env` using `APP_` prefix:
+```bash
+uvicorn src.app.main:app --reload
+```
+
+## API docs
+
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- ReDoc: `http://127.0.0.1:8000/redoc`
+
+## API testing steps
+
+1. Register
+
+```bash
+curl -X POST http://127.0.0.1:8000/auth/register \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"user@example.com","username":"user1","password":"secret123"}'
+```
+
+2. Login
+
+```bash
+curl -X POST http://127.0.0.1:8000/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"user@example.com","password":"secret123"}'
+```
+
+3. Use token on protected route
+
+```bash
+curl http://127.0.0.1:8000/auth/me -H 'Authorization: Bearer <ACCESS_TOKEN>'
+```
+
+## Environment configuration
+
+Settings are loaded from `.env` with `APP_` prefix:
 - `APP_DATABASE_URL`
 - `APP_ENABLE_SQL_ECHO`
 - `APP_JWT_SECRET`
 - `APP_JWT_ALGORITHM`
 - `APP_JWT_EXP_MINUTES`
 
-## Docker deployment (API + Postgres)
+## PostgreSQL + Docker
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
-API will be available at `http://localhost:8000` and Postgres at `localhost:5432`.
-
-## Frontend preview
+## Alembic migrations
 
 ```bash
-./scripts/preview_frontend.sh 8080
+alembic upgrade head
+alembic revision --autogenerate -m "your change"
 ```
 
-Then open `http://localhost:8080` and point API base URL to `http://127.0.0.1:8000`.
+## Frontend
 
-## API
-
-- `POST /auth/register` register with email, username, password
-- `POST /auth/login` login and receive JWT access token + session token
-- `GET /auth/me` read current user from Bearer token
-- `POST /users` create a user
-- `GET /users` list users
-- `POST /posts` create a post
-- `GET /posts` list posts
-- `POST /posts/{post_id}/comments` add comment
-- `POST /posts/{post_id}/likes` like a post
-- `POST /users/{user_id}/follow/{target_id}` follow a user
-- `GET /health` health check
-
-
-## Phase 2 — React frontend (best for learning)
-
-A React-based UI is available in `frontend-react/` (CDN + Babel for zero-build learning setup). It is designed with a cleaner, intuitive layout, consistent styling, responsive behavior, and immediate feedback states for loading/success/errors.
-
-Run it locally:
-
-```bash
-python -m http.server 8090 --directory frontend-react
-```
-
-Then open `http://localhost:8090`.
-
-
-## Notes
-- SQLite is the default for development. For production, set `APP_DATABASE_URL` to Postgres (see `.env.example`).
-- This starter keeps the domain model intentionally small to make iteration and scaling easier.
+- Vanilla UI: `./scripts/preview_frontend.sh 8080`
+- React UI: `python -m http.server 8090 --directory frontend-react`

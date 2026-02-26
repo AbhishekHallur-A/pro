@@ -1,26 +1,20 @@
 from datetime import datetime, timedelta, timezone
-import hashlib
-import hmac
-import os
 import secrets
 
 import jwt
+from passlib.context import CryptContext
 
 from .settings import settings
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 def hash_password(password: str) -> str:
-    salt = os.urandom(16)
-    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 200_000)
-    return f"{salt.hex()}:{digest.hex()}"
+    return pwd_context.hash(password)
 
 
-def verify_password(password: str, stored_hash: str) -> bool:
-    salt_hex, digest_hex = stored_hash.split(":", 1)
-    salt = bytes.fromhex(salt_hex)
-    expected = bytes.fromhex(digest_hex)
-    calculated = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 200_000)
-    return hmac.compare_digest(calculated, expected)
+def verify_password(password: str, password_hash: str) -> bool:
+    return pwd_context.verify(password, password_hash)
 
 
 def create_access_token(user_id: int) -> str:
