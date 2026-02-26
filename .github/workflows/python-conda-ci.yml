@@ -1,0 +1,51 @@
+name: Python Conda CI
+
+on:
+  push:
+    branches: [main, work]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniconda-version: "latest"
+          auto-activate-base: false
+
+      - name: Cache conda packages and environments
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/conda_pkgs_dir
+            ~/miniconda3/envs
+          key: conda-${{ runner.os }}-${{ hashFiles('python-package-conda.yml') }}
+          restore-keys: |
+            conda-${{ runner.os }}-
+
+      - name: Configure conda package cache dir
+        run: conda config --add pkgs_dirs ~/conda_pkgs_dir
+
+      - name: Create/Update environment from file
+        run: conda env update --name ci --file python-package-conda.yml --prune
+
+      - name: Verify environment
+        run: conda run -n ci python --version
+
+      - name: Install package (editable)
+        run: conda run -n ci pip install -e .
+
+      - name: Run linting (flake8)
+        run: conda run -n ci flake8 src tests
+
+      - name: Run tests (pytest)
+        run: conda run -n ci pytest -q
