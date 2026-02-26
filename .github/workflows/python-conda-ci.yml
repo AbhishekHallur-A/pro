@@ -28,15 +28,18 @@ jobs:
           path: |
             ~/conda_pkgs_dir
             ~/miniconda3/envs
-          key: conda-${{ runner.os }}-${{ hashFiles('python-package-conda.yml') }}
+          key: conda-${{ runner.os }}-${{ hashFiles('environment.yml') }}
           restore-keys: |
             conda-${{ runner.os }}-
 
       - name: Configure conda package cache dir
         run: conda config --add pkgs_dirs ~/conda_pkgs_dir
 
+      - name: Validate environment file exists
+        run: test -f environment.yml
+
       - name: Create/Update environment from file
-        run: conda env update --name ci --file python-package-conda.yml --prune
+        run: conda env update --name ci --file environment.yml --prune
 
       - name: Verify environment
         run: conda run -n ci python --version
