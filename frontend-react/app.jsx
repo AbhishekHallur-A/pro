@@ -8,15 +8,15 @@ function App() {
   const [authorId, setAuthorId] = useState("");
   const [content, setContent] = useState("");
   const [posts, setPosts] = useState([]);
+  const [token, setToken] = useState("");
+  const [viewer, setViewer] = useState(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const callApi = async (path, options = {}) => {
-    const res = await fetch(`${apiBase}${path}`, {
-      headers: { "Content-Type": "application/json" },
-      ...options,
-    });
+    const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+    const res = await fetch(`${apiBase}${path}`, { ...options, headers });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.detail || `HTTP ${res.status}`);
     return data;
@@ -61,7 +61,27 @@ function App() {
       setEmail("");
       setUsername("");
       setPassword("");
-      setMessage(`Registered user #${user.id}`);
+      setMessage(`Registered @${user.username}. Now login.`);
+      setError("");
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
+  const login = async (event) => {
+    event.preventDefault();
+    try {
+      const auth = await callApi("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      setToken(auth.access_token);
+      const me = await callApi("/auth/me", {
+        headers: { Authorization: `Bearer ${auth.access_token}` },
+      });
+      setViewer(me);
+      setAuthorId(String(me.id));
+      setMessage(`Logged in as @${me.username}`);
       setError("");
     } catch (e) {
       setError(e.message);
@@ -86,10 +106,10 @@ function App() {
 
   return (
     <main className="app">
-      <header className="top-nav card">
+      <header className="top-nav card glass">
         <div className="brand">
           <h1>Pulse</h1>
-          <p>React Learning UI</p>
+          <p>Social starter UI</p>
         </div>
         <div className="api-box">
           <input value={apiBase} onChange={(e) => setApiBase(e.target.value)} aria-label="API base URL" />
@@ -99,37 +119,31 @@ function App() {
 
       <section className="grid">
         <article className="card">
-          <h2>Create Account</h2>
+          <h2>Account</h2>
           <form onSubmit={register} className="stack">
             <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <button type="submit">Register</button>
+            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <div className="row">
+              <button type="submit">Register</button>
+              <button type="button" className="ghost" onClick={login}>Login</button>
+            </div>
           </form>
+
+          {viewer && (
+            <div className="viewer">
+              <p className="viewer-title">Signed in</p>
+              <p>@{viewer.username} · {viewer.email}</p>
+            </div>
+          )}
+          {token && <p className="token">JWT ready (hidden)</p>}
         </article>
 
         <article className="card">
           <h2>Create Post</h2>
           <form onSubmit={createPost} className="stack">
-            <input
-              type="number"
-              placeholder="Author ID"
-              value={authorId}
-              onChange={(e) => setAuthorId(e.target.value)}
-              required
-            />
-            <textarea
-              placeholder="What’s happening?"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              required
-            />
+            <input type="number" placeholder="Author ID" value={authorId} onChange={(e) => setAuthorId(e.target.value)} required />
+            <textarea placeholder="What’s happening?" value={content} onChange={(e) => setContent(e.target.value)} required />
             <button type="submit">Publish</button>
           </form>
         </article>
@@ -142,7 +156,6 @@ function App() {
         </div>
 
         {loading && <div className="loader">Loading posts…</div>}
-
         {!loading && posts.length === 0 && <p className="muted">No posts yet. Publish your first update.</p>}
 
         {!loading && posts.map((p) => (
