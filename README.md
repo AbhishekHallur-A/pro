@@ -74,3 +74,8 @@ python -m http.server 8090 --directory frontend-react
 ```
 
 Then open `http://localhost:8090`.
+
+
+## Notes
+- SQLite is the default for development. For production, set `APP_DATABASE_URL` to Postgres (see `.env.example`).
+- This starter keeps the domain model intentionally small to make iteration and scaling easier.
