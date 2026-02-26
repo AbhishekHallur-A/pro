@@ -61,3 +61,16 @@ Then open `http://localhost:8080` and point API base URL to `http://127.0.0.1:80
 - `POST /posts/{post_id}/likes` like a post
 - `POST /users/{user_id}/follow/{target_id}` follow a user
 - `GET /health` health check
+
+
+## Phase 2 — React frontend (best for learning)
+
+A React-based UI is available in `frontend-react/` (CDN + Babel for zero-build learning setup).
+
+Run it locally:
+
+```bash
+python -m http.server 8090 --directory frontend-react
+```
+
+Then open `http://localhost:8090`.

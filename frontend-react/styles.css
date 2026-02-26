@@ -1,0 +1,13 @@
+* { box-sizing: border-box; font-family: Inter, system-ui, sans-serif; }
+body { margin: 0; background: #0b1020; color: #e7ecff; }
+.app { max-width: 980px; margin: 0 auto; padding: 20px; }
+.header { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+.api-box { display: flex; gap: 8px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+.card { background: #151b2f; border: 1px solid #2b355a; border-radius: 12px; padding: 14px; margin-top: 14px; }
+.stack { display: flex; flex-direction: column; gap: 8px; }
+input, textarea, button { border-radius: 8px; border: 1px solid #32406e; padding: 10px; background: #0d1428; color: #e7ecff; }
+button { cursor: pointer; background: #4e6af3; border: none; }
+.ok { color: #8dffa7; }
+.err { color: #ff9f9f; }
+@media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
