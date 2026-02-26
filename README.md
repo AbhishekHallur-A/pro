@@ -1,12 +1,12 @@
-# Social Media App (Instagram + Twitter Hybrid) - Starter
+# Social Media App (Instagram + Twitter Hybrid) – Starter
 
-This is a minimal, production-oriented starter codebase for a social media app. It implements core entities (users, posts, comments, likes, follows) using FastAPI and SQLAlchemy, and is designed to evolve into a scalable service.
+This is a minimal, production-oriented starter codebase for a social media app. It implements core entities such as users, posts, comments, likes, and follows using FastAPI and SQLAlchemy, and is designed to evolve into a scalable service.
 
 ## Quick start
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn src.app.main:app --reload
 ```
@@ -26,7 +26,9 @@ uvicorn src.app.main:app --reload
 - `POST /posts/{post_id}/comments` add comment
 - `POST /posts/{post_id}/likes` like a post
 - `POST /users/{user_id}/follow/{target_id}` follow a user
+- `GET /health` health check
 
 ## Notes
+
 - Uses SQLite for development. Set `APP_DATABASE_URL` for Postgres in production.
 - This starter focuses on the core domain model to keep the initial scaffold clean and extensible.
