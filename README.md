@@ -1,10 +1,11 @@
 # Social Media App (Instagram + Twitter Hybrid) – Starter
 
-This starter now includes both:
-- A FastAPI backend API (`src/app`)
-- A browser-based Web UI (`frontend/`) that calls the live API
+This starter includes:
+- FastAPI backend API (`src/app`)
+- Browser-based Web UI (`frontend/`)
+- Local containerized deployment with Postgres (`Dockerfile`, `docker-compose.yml`)
 
-## Quick start
+## Quick start (local Python)
 
 ```bash
 python -m venv .venv
@@ -13,13 +14,39 @@ pip install -r requirements.txt
 uvicorn src.app.main:app --reload
 ```
 
-In another terminal, start the UI preview:
+## Environment variable management
+
+1. Copy the example file:
+
+```bash
+cp .env.example .env
+```
+
+2. Update values for your environment (`APP_JWT_SECRET` is required for production).
+
+Current app settings are read from `.env` using `APP_` prefix:
+- `APP_DATABASE_URL`
+- `APP_ENABLE_SQL_ECHO`
+- `APP_JWT_SECRET`
+- `APP_JWT_ALGORITHM`
+- `APP_JWT_EXP_MINUTES`
+
+## Docker deployment (API + Postgres)
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+API will be available at `http://localhost:8000` and Postgres at `localhost:5432`.
+
+## Frontend preview
 
 ```bash
 ./scripts/preview_frontend.sh 8080
 ```
 
-Then open `http://localhost:8080` and use the API box (top-right) to point to your backend (default `http://127.0.0.1:8000`).
+Then open `http://localhost:8080` and point API base URL to `http://127.0.0.1:8000`.
 
 ## API
 
