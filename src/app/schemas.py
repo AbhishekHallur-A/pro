@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserCreate(BaseModel):
@@ -9,14 +9,13 @@ class UserCreate(BaseModel):
 
 
 class UserRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     email: EmailStr
     username: str
     is_active: bool
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class Pagination(BaseModel):
@@ -30,13 +29,12 @@ class PostCreate(BaseModel):
 
 
 class PostRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     author_id: int
     content: str
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class CommentCreate(BaseModel):
@@ -45,14 +43,13 @@ class CommentCreate(BaseModel):
 
 
 class CommentRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     post_id: int
     author_id: int
     content: str
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 class LikeCreate(BaseModel):
@@ -60,20 +57,18 @@ class LikeCreate(BaseModel):
 
 
 class LikeRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     post_id: int
     user_id: int
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-
 
 class FollowRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     follower_id: int
     following_id: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
